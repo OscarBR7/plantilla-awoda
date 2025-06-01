@@ -14,6 +14,7 @@ import {
   IconButton,
   List,
   ListItem,
+  ListItemButton,
   ListItemText,
   Paper,
   Table,
@@ -25,12 +26,14 @@ import {
   TextField,
   Toolbar,
   Typography,
+  Divider,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import logo from "../assets/isologo-awoda.png";
 import logoawoda from "../assets/isotipo-awoda.png";
 import { useNavigate } from "react-router-dom";
-
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const drawerWidth = 240;
 
@@ -43,9 +46,9 @@ const initialData = [
 
 export default function DashboardPage() {
   const [open, setOpen] = useState(false);
+  const [selectedColonia, setSelectedColonia] = useState("Magdalena de las Salinas");
   const [data] = useState(initialData);
   const navigate = useNavigate();
-
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -78,7 +81,7 @@ export default function DashboardPage() {
             <Button color="inherit" onClick={() => navigate("/dashboard")}>PRINCIPAL</Button>
             <Button color="inherit" onClick={() => navigate("/graficas")}>GRÁFICAS</Button>
             <Button color="inherit" onClick={() => navigate("/historial")}>HISTORIAL</Button>
-            <Button color="inherit">ENTRENAMIENTO</Button> {/* puedes enlazarlo más tarde */}
+            <Button color="inherit">ENTRENAMIENTO</Button>
           </Box>
 
           <Box sx={{ width: 80 }}></Box>
@@ -96,27 +99,67 @@ export default function DashboardPage() {
               boxSizing: "border-box",
               bgcolor: "#233044",
               color: "#ffffff",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
             },
           }}
         >
-          <Toolbar />
-          <Box sx={{ p: 5 }}>
-            <Typography variant="body2" gutterBottom>
-              Colonias disponibles:
-            </Typography>
-            <List>
-              {["Magdalena de las Salinas", "Lindavista II", "Lindavista I", "Tepeyac Insurgentes"].map((text, index) => (
-                <ListItem button key={index}>
-                  <ListItemText
-                    primary={`${index + 1}. ${text}`}
-                    primaryTypographyProps={{ color: "#ffffff" }}
-                  />
-                </ListItem>
-              ))}
-            </List>
-            <Typography variant="body2" sx={{ mt: 2, color: "#ffffff" }}>
-              La priorización de suministro está delimitada a un conjunto de colonias previamente seleccionadas. Las sugerencias generadas se basan en los datos disponibles de esta área y no deben extrapolarse a otras regiones sin el análisis correspondiente
-            </Typography>
+          <Box>
+            <Toolbar />
+            <Box sx={{ p: 5 }}>
+              <Typography variant="body2" gutterBottom>
+                Colonias disponibles:
+              </Typography>
+              <List>
+                {["Lindavista I", "Lindavista II", "Magdalena de las Salinas", "Tepeyac Insurgentes"].map((text, index) => {
+                  const isSelected = selectedColonia === text;
+                  return (
+                    <ListItemButton
+                      key={index}
+                      selected={isSelected}
+                      onClick={() => setSelectedColonia(text)}
+                      sx={{
+                        borderRadius: 1,
+                        mb: 1,
+                        bgcolor: isSelected ? "#4c6ef5" : "transparent",
+                        "&:hover": {
+                          bgcolor: isSelected ? "#3a5ddc" : "#2c3e50",
+                        },
+                      }}
+                    >
+                      <ArrowForwardIcon
+                        sx={{
+                          color: isSelected ? "#fb0a7f" : "#90caf9",
+                          mr: 1,
+                        }}
+                      />
+                      <ListItemText
+                        primary={text}
+                        primaryTypographyProps={{
+                          color: "#ffffff",
+                          fontWeight: isSelected ? "bold" : "normal",
+                        }}
+                      />
+                    </ListItemButton>
+                  );
+                })}
+              </List>
+              <Typography variant="body2" sx={{ mt: 2, color: "#ffffff" }}>
+                La priorización de suministro está delimitada a un conjunto de colonias previamente seleccionadas. Las sugerencias generadas se basan en los datos disponibles de esta área y no deben extrapolarse a otras regiones sin el análisis correspondiente
+              </Typography>
+            </Box>
+          </Box>
+
+          <Box>
+            <Divider sx={{ borderColor: "#ffffff" }} />
+            <Button
+              startIcon={<LogoutIcon />}
+              sx={{ color: "#ffffff", justifyContent: "flex-start", px: 5, py: 2, textTransform: "none" }}
+              onClick={() => navigate("/singin")}
+            >
+              Cerrar sesión
+            </Button>
           </Box>
         </Drawer>
 
@@ -194,10 +237,9 @@ export default function DashboardPage() {
                 <TableRow>
                   <TableCell>Colonia</TableCell>
                   <TableCell>Núm. de Reportes</TableCell>
-                  <TableCell>Consumo Prom. de Agua</TableCell>
-                  <TableCell>Población Estimada</TableCell>
-                  <TableCell>Consumo Prom. por Persona</TableCell>
-                  <TableCell>Núm. de Viviendas</TableCell>
+                  <TableCell>Consumo Total de Agua por Colonia</TableCell>
+                  <TableCell>Población Promedio por Colonia</TableCell>
+                  <TableCell>Núm. de Edificaciones</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -207,7 +249,6 @@ export default function DashboardPage() {
                     <TableCell><TextField size="small" defaultValue={row.reportes} /></TableCell>
                     <TableCell><TextField size="small" defaultValue={row.consumo} /></TableCell>
                     <TableCell><TextField size="small" defaultValue={row.poblacion} /></TableCell>
-                    <TableCell><TextField size="small" defaultValue={row.perCapita} /></TableCell>
                     <TableCell><TextField size="small" defaultValue={row.viviendas} /></TableCell>
                   </TableRow>
                 ))}

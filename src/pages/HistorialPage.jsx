@@ -1,15 +1,16 @@
 // HistorialPage.jsx
-import React from "react";
+import React, { useState } from "react";
 import {
   AppBar,
   Avatar,
   Box,
   Button,
   CssBaseline,
+  Divider,
   Drawer,
   IconButton,
   List,
-  ListItem,
+  ListItemButton,
   ListItemText,
   Paper,
   Table,
@@ -18,14 +19,15 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  TextField,
   Toolbar,
   Typography,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import logo from "../assets/isologo-awoda.png";
-import { Divider } from "@mui/material";
+import logoawoda from "../assets/isotipo-awoda.png";
 import { useNavigate } from "react-router-dom";
+import LogoutIcon from '@mui/icons-material/Logout';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const drawerWidth = 240;
 
@@ -64,11 +66,12 @@ const historialData = [
 
 export default function HistorialPage() {
   const navigate = useNavigate();
+  const [selectedColonia, setSelectedColonia] = useState("Magdalena de las Salinas");
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <CssBaseline />
 
-      {/* AppBar superior */}
       <AppBar
         position="fixed"
         sx={{
@@ -96,7 +99,7 @@ export default function HistorialPage() {
             <Button color="inherit" onClick={() => navigate("/dashboard")}>PRINCIPAL</Button>
             <Button color="inherit" onClick={() => navigate("/graficas")}>GRÁFICAS</Button>
             <Button color="inherit" onClick={() => navigate("/historial")}>HISTORIAL</Button>
-            <Button color="inherit">ENTRENAMIENTO</Button> {/* puedes enlazarlo más tarde */}
+            <Button color="inherit">ENTRENAMIENTO</Button>
           </Box>
 
           <Box sx={{ width: 80 }}></Box>
@@ -104,7 +107,6 @@ export default function HistorialPage() {
       </AppBar>
 
       <Box sx={{ display: "flex", flexGrow: 1 }}>
-        {/* Aside izquierdo */}
         <Drawer
           variant="permanent"
           sx={{
@@ -115,28 +117,68 @@ export default function HistorialPage() {
               boxSizing: "border-box",
               bgcolor: "#233044",
               color: "white",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
             },
           }}
         >
-          <Toolbar />
-          <Box sx={{ p: 3 }}>
-            <Typography variant="body2" gutterBottom>
-              Colonias disponibles:
-            </Typography>
-            <List>
-              {["Magdalena de las Salinas", "Lindavista II", "Lindavista I", "Tepeyac Insurgentes"].map((colonia, index) => (
-                <ListItem button key={index}>
-                  <ListItemText
-                    primary={`${index + 1}. ${colonia}`}
-                    primaryTypographyProps={{ color: "white" }}
-                  />
-                </ListItem>
-              ))}
-            </List>
-            <Divider sx={{ borderColor: "white", my: 2 }} />
-            <Typography variant="body2">
-              La priorización de suministro está delimitada a un conjunto de colonias previamente seleccionadas.
-            </Typography>
+          <Box>
+            <Toolbar />
+            <Box sx={{ p: 5 }}>
+              <Typography variant="body2" gutterBottom>
+                Colonias disponibles:
+              </Typography>
+              <List>
+                {["Lindavista I", "Lindavista II", "Magdalena de las Salinas", "Tepeyac Insurgentes"].map((text, index) => {
+                  const isSelected = selectedColonia === text;
+                  return (
+                    <ListItemButton
+                      key={index}
+                      selected={isSelected}
+                      onClick={() => setSelectedColonia(text)}
+                      sx={{
+                        borderRadius: 1,
+                        mb: 1,
+                        bgcolor: isSelected ? "#4c6ef5" : "transparent",
+                        "&:hover": {
+                          bgcolor: isSelected ? "#3a5ddc" : "#2c3e50",
+                        },
+                      }}
+                    >
+                      <ArrowForwardIcon
+                        sx={{
+                          color: isSelected ? "#fb0a7f" : "#90caf9",
+                          mr: 1,
+                        }}
+                      />
+                      <ListItemText
+                        primary={text}
+                        primaryTypographyProps={{
+                          color: "#ffffff",
+                          fontWeight: isSelected ? "bold" : "normal",
+                        }}
+                      />
+                    </ListItemButton>
+                  );
+                })}
+              </List>
+              <Divider sx={{ borderColor: "white", my: 2 }} />
+              <Typography variant="body2">
+                La priorización de suministro está delimitada a un conjunto de colonias previamente seleccionadas.
+              </Typography>
+            </Box>
+          </Box>
+
+          <Box>
+            <Divider sx={{ borderColor: "#ffffff" }} />
+            <Button
+              startIcon={<LogoutIcon />}
+              sx={{ color: "#ffffff", justifyContent: "flex-start", px: 5, py: 2, textTransform: "none" }}
+              onClick={() => navigate("/singin")}
+            >
+              Cerrar sesión
+            </Button>
           </Box>
         </Drawer>
 
@@ -155,10 +197,9 @@ export default function HistorialPage() {
                     <TableCell>Fecha de Consulta</TableCell>
                     <TableCell>Colonia</TableCell>
                     <TableCell>Núm. Reportes</TableCell>
-                    <TableCell>Consumo de Agua (m³)</TableCell>
-                    <TableCell>Población Estimada</TableCell>
-                    <TableCell>Consumo Prom. por Persona</TableCell>
-                    <TableCell>Número de Viviendas</TableCell>
+                    <TableCell>Consumo de Agua por Colonia (m³)</TableCell>
+                    <TableCell>Población Promedio por Colonia</TableCell>
+                    <TableCell>Número de Edificaciones</TableCell>
                     <TableCell>Distribución Sugerida</TableCell>
                   </TableRow>
                 </TableHead>
@@ -170,7 +211,6 @@ export default function HistorialPage() {
                       <TableCell>{row.reportes}</TableCell>
                       <TableCell>{row.consumo}</TableCell>
                       <TableCell>{row.poblacion}</TableCell>
-                      <TableCell>{row.perCapita}</TableCell>
                       <TableCell>{row.viviendas}</TableCell>
                       <TableCell>{row.distribucion}</TableCell>
                     </TableRow>
@@ -201,6 +241,7 @@ export default function HistorialPage() {
           justifyContent: "center",
         }}
       >
+        <Avatar src={logoawoda} alt="AWODA Logo" sx={{ width: 24, height: 24, mr: 1 }} />
         <Typography variant="body2">© 2025 AWODA. Todos los derechos reservados.</Typography>
       </Box>
     </Box>
