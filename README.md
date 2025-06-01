@@ -1,4 +1,11 @@
+# Plantilla de Mockups de AWODA
+
+Este es un repositorio donde se presentan las pantallas, vistas principales y
+de manera preliminar del proyecto de AWODA.
+
+
 # Getting Started with Create React App
+
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
